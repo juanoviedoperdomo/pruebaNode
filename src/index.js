@@ -1,22 +1,35 @@
-
 const express = require ("express");
-
-
 const {info,error} = require('./modules/my-log')
-const { countries } = require("countries-list");
+const { countries,languages } = require("countries-list");
 
 const app = express();
 
-app.get("/",function(request, response) {
+app.get("/",(request, response)=> {
     response.status(200).send("HELLO")
 })
-app.get("/info",function(request, response) {
+app.get("/info",(request, response)=> {
     info("Hola info")
     response.status(200).send("info1")
 })
-app.get("*",function(request,response){
+app.get('/country',(request,response)=>{
+    console.log('request.query: ', request.query);
+    response.json(countries[request.query.code]);
+})
+app.get('/languages/:lang',(request,response)=>{
+    console.log('request.params: ', request.params);
+    const lang=languages[request.params.lang];
+    if (lang){
+        response.json(lang);
+    }else{
+        response.status(404).json({status:'NOT FOUND ',
+      message: 'language '+ request.params.lang+ ' not found' })
+    }
+})
+app.get("*",(request,response)=>{
     response.status(404).send("NOT FOUND");
 })
+
+
 // var server = http.createServer(function(request,response){
 //     var parsed = url.parse(request.url);
 //     console.log("parsed: ",parsed);
